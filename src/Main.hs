@@ -11,7 +11,7 @@ minWordLength :: Int
 minWordLength = 5
 
 maxWordLength :: Int
-maxWordLength = 9
+maxWordLength = 7
 
 newtype WordList = WordList [String] deriving (Eq, Show)
 
@@ -84,12 +84,15 @@ handleGuess puzzle guess = do
       return (fillInCharacter puzzle guess)
 
 gameOver :: Puzzle -> IO ()
-gameOver (Puzzle wordToGuess _ guessed) = 
-  if (length guessed) > (length wordToGuess) then
+gameOver (Puzzle wordToGuess filledInSoFar guessed) = 
+  if (length wrongGuesses) > (length wordToGuess) then
     do  putStrLn "You lose!"
         putStrLn $ "The word was: " ++ wordToGuess
         exitSuccess
   else return ()
+  where goodGuesses = [x | Just x <- filledInSoFar ]
+        wrongGuesses = filter (\x -> not (elem x goodGuesses)) guessed
+    
 
 gameWin :: Puzzle -> IO ()
 gameWin (Puzzle _ filledInSoFar _) = 
@@ -101,8 +104,8 @@ gameWin (Puzzle _ filledInSoFar _) =
 
 runGame :: Puzzle -> IO ()
 runGame puzzle = forever $ do
-  gameOver puzzle
   gameWin puzzle
+  gameOver puzzle
   putStrLn $ "Current puzzle is: " ++ show puzzle
   putStr "Guess a letter: "
   guess <- getLine
