@@ -85,7 +85,7 @@ handleGuess puzzle guess = do
 
 gameOver :: Puzzle -> IO ()
 gameOver (Puzzle wordToGuess _ guessed) = 
-  if (length guessed) > 7 then
+  if (length guessed) > (length wordToGuess) then
     do  putStrLn "You lose!"
         putStrLn $ "The word was: " ++ wordToGuess
         exitSuccess
